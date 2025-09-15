@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Form</title>
+    <link rel="stylesheet" href="index.css" />
+    <script src="index.js"></script>
+  </head>
+  <body>
+    <form id="myForm" onsubmit="submit_form(event)" novalidate>
+      <h1 id="title">Appointment Form</h1>
+      <div class="form-row">
+        <div class="appointment-form">
+          <select id="title-options" oninput="validateTitle()" required>
+            <option value="" disabled selected hidden></option>
+            <option value="Mr.">Mr</option>
+            <option value="Ms.">Ms</option>
+            <option value="Mrs.">Mrs</option>
+          </select>
+          <label for="title-options">Title</label>
+          <div class="error-message" id="titleError"></div>
+        </div>
+
+        <div class="appointment-form">
+          <input
+            type="text"
+            id="first-name"
+            oninput="validateFirstName()"
+            placeholder=" "
+            required
+          />
+          <label for="first-name">First Name</label>
+          <div class="error-message" id="firstNameError"></div>
+        </div>
+
+        <div class="appointment-form">
+          <input
+            type="text"
+            id="last-name"
+            oninput="validateLastName()"
+            placeholder=" "
+            required
+          />
+          <label for="last-name">Last Name</label>
+          <div class="error-message" id="lastNameError"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div id="appointment-form">
+          <div id="phone-wrapper">
+            <div id="phone-group">
+              <select id="country-code" oninput="validateMobile()" required>
+                <option value="" disabled selected hidden></option>
+                <option value="+91">🇮🇳 +91</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+                <option value="+61">🇦🇺 +61</option>
+              </select>
+              <input
+                type="tel"
+                id="mobile-number"
+                placeholder=" "
+                inputmode="numeric"
+                oninput="validateMobile()"
+                required
+              />
+              <label id="mobileLabel">Mobile Number</label>
+            </div>
+            <div class="error-message" id="mobileError"></div>
+          </div>
+        </div>
+
+        <div class="appointment-form">
+          <input
+            type="email"
+            id="email"
+            oninput="validateEmail()"
+            placeholder=" "
+            required
+          />
+          <label for="email">Email</label>
+          <div class="error-message" id="emailError"></div>
+        </div>
+
+        <div class="appointment-form">
+          <input
+            type="number"
+            id="interest"
+            oninput="validateInterest()"
+            placeholder=""
+            min="4.5"
+            value="4.5"
+            step=".1"
+            max="20"
+          />
+          <label for="interest">Interest</label>
+          <div class="error-message" id="interestError"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="appointment-form">
+          <input
+            type="date"
+            id="appointment-date"
+            oninput="validateAppointmentDate()"
+            placeholder=""
+            required
+          />
+          <label for="appointment-date">Appointment Date</label>
+          <div class="error-message" id="dateError"></div>
+        </div>
+
+        <div class="appointment-form">
+          <select
+            id="appointment-time"
+            oninput="validateAppointmentTime()"
+            required
+          >
+            <option value="" disabled selected hidden></option>
+            <option value="9:00 AM">9:00 AM</option>
+            <option value="10:00 AM">10:00 AM</option>
+            <option value="11:00 AM">11:00 AM</option>
+            <option value="12:00 PM">12:00 PM</option>
+            <option value="1:00 PM">1:00 PM</option>
+            <option value="2:00 PM">2:00 PM</option>
+          </select>
+          <label for="appointment-time">Appointment Time</label>
+          <div class="error-message" id="timeError"></div>
+        </div>
+
+        <div class="appointment-form">
+          <select
+            id="appointment-venue"
+            oninput="validateAppointmentVenue()"
+            required
+          >
+            <option value="" disabled selected hidden></option>
+            <option value="United Arab Emirates">United Arab Emirates</option>
+            <option value="Singapore">Singapore</option>
+            <option value="Hong Kong">Hong Kong</option>
+            <option value="Australia">Australia</option>
+          </select>
+          <label for="appointment-venue">Appointment Venue</label>
+          <div class="error-message" id="venueError"></div>
+        </div>
+      </div>
+
+      <div class="amount-row">
+        <div class="appointment-form">
+          <input
+            type="text"
+            id="amount"
+            placeholder=" "
+            oninput="validateAmount()"
+            onchange="formatAmount()"
+            required
+          />
+          <label for="amount">Amount</label>
+          <div class="error-message" id="amountError"></div>
+        </div>
+        <br />
+
+        <div class="appointment-form">
+          <span id="range-start">500</span>
+          <input
+            type="range"
+            id="amount_range"
+            min="500"
+            max="100000"
+            step="10"
+            value="500"
+            style="margin: 0 10px; flex: 1"
+            oninput="amount.value = amount_range.value"
+          />
+          <span id="range-end">100000</span>
+        </div>
+      </div>
+
+      <div id="button"><button id="submit" type="submit">Submit</button></div>
+    </form>
+  </body>
+</html>

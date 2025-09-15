@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Preview Page</title>
+    <link rel="stylesheet" href="preview.css" />
+  </head>
+  <body>
+    <style id="css-variables">
+      :root {
+      }
+    </style>
+
+    <table>
+      <tr>
+        <td>Full Name</td>
+        <td><span id="full-name"></span></td>
+      </tr>
+      <tr>
+        <td>Mobile Number</td>
+        <td><span id="mobile-number"></span></td>
+      </tr>
+      <tr>
+        <td>Email Id</td>
+        <td><span id="email"></span></td>
+      </tr>
+      <tr>
+        <td>Appointment Date</td>
+        <td><span id="appointment-date"></span></td>
+      </tr>
+      <tr>
+        <td>Appointment Time</td>
+        <td><span id="appointment-time"></span></td>
+      </tr>
+      <tr>
+        <td>Appointment Venue</td>
+        <td><span id="appointment-venue"></span></td>
+      </tr>
+      <tr>
+        <td>Interest</td>
+        <td><span id="interest"></span></td>
+      </tr>
+      <tr>
+        <td>Amount</td>
+        <td><span id="amount"></span></td>
+      </tr>
+    </table>
+    <script>
+      const title = sessionStorage.getItem("title") || "";
+      const firstName = sessionStorage.getItem("first_name") || "";
+      const lastName = sessionStorage.getItem("last_name") || "";
+      const countryCode = sessionStorage.getItem("country_code") || "";
+      const mobileNumber = sessionStorage.getItem("mobile_number") || "";
+      const email = sessionStorage.getItem("email") || "";
+      const appointmentTime = sessionStorage.getItem("appointment_time") || "";
+      const appointmentDate = sessionStorage.getItem("appointment_date") || "";
+      const appointmentVenue =
+        sessionStorage.getItem("appointment_venue") || "";
+      const interestRate = sessionStorage.getItem("interest_rate") || "";
+      const amount = sessionStorage.getItem("amount") || "";
+
+      document.getElementById("full-name").textContent =
+        `${title} ${firstName} ${lastName}`.trim();
+      document.getElementById("mobile-number").textContent =
+        `${countryCode} ${mobileNumber}`.trim();
+      document.getElementById("email").textContent = `${email}`.trim();
+      document.getElementById("appointment-date").textContent =
+        `${appointmentDate}`.trim();
+      document.getElementById("appointment-time").textContent =
+        `${appointmentTime}`.trim();
+      document.getElementById("appointment-venue").textContent =
+        `${appointmentVenue}`.trim();
+      document.getElementById("interest").textContent =
+        `${interestRate}%`.trim();
+      document.getElementById("amount").textContent = `${amount}`.trim();
+    </script>
+  </body>
+</html>
