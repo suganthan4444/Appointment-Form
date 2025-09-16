@@ -19,15 +19,29 @@ function validateFirstName() {
     showError(firstName, firstNameError, "First name is required");
     return false;
   } else if (/\d/.test(firstName.value)) {
-    firstName.value = firstName.value.replace(/[^A-Z,a-z]/g, "");
+    firstName.value = firstName.value.replace(/[^A-Za-z]/g, "");
     showError(firstName, firstNameError, "Name cannot contain numbers");
     return false;
   } else if (!/^[A-Za-z]+$/.test(firstName.value)) {
+    firstName.value = firstName.value.replace(/[^A-Za-z]/g, "");
     showError(firstName, firstNameError, "Only letters are allowed");
     return false;
   } else {
     clearError(firstName, firstNameError);
     return true;
+  }
+}
+
+function checkFirstName() {
+  const firstName = document.getElementById("first-name");
+  const firstNameError = document.getElementById("firstNameError");
+  if (firstName.value.length < 2) {
+    showError(
+      firstName,
+      firstNameError,
+      "First name should contain two letters or more"
+    );
+    return false;
   }
 }
 
@@ -43,6 +57,7 @@ function validateLastName() {
     showError(lastName, lastNameError, "Name cannot contain numbers");
     return false;
   } else if (!/^[A-Za-z]+$/.test(lastName.value)) {
+    lastName.value = lastName.value.replace(/[^A-Z,a-z]/g, "");
     showError(lastName, lastNameError, "Only letters are allowed");
     return false;
   } else {
@@ -68,6 +83,10 @@ function validateMobile() {
       "Mobile number can only contain numbers"
     );
     return false;
+  } else if (!/^[0-9]{10}$/.test(mobile.value)) {
+    mobile.value = mobile.value.slice(0, 10);
+    clearError(mobileWrapper, mobileError);
+    return false;
   } else if (!countryCode.value) {
     showError(mobileWrapper, mobileError, "Please select a country code");
     return false;
@@ -77,6 +96,24 @@ function validateMobile() {
   }
 }
 
+//Mobile Length Validation
+function validateMobileLength() {
+  const countryCode = document.getElementById("country-code");
+  const mobileWrapper = document.getElementById("phone-group");
+  const mobile = document.getElementById("mobile-number");
+  const mobileError = document.getElementById("mobileError");
+  if (mobile.value.length >= 1 && mobile.value.length < 10) {
+    showError(
+      mobileWrapper,
+      mobileError,
+      "Mobile number should have exactly 10 digits"
+    );
+    return false;
+  } else if (mobile.value.length > 10) {
+  } else {
+    return true;
+  }
+}
 // Email
 function validateEmail() {
   const email = document.getElementById("email");
@@ -84,7 +121,10 @@ function validateEmail() {
   if (!email.value.trim()) {
     showError(email, emailError, "Email is required");
     return false;
-  } else if (!/^[^@]+@[^@]+\.[^@]+$/.test(email.value)) {
+  } else if (
+    !/^[a-zA-Z0-9._%+-~!]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.value)
+  ) {
+    email.value = email.value.replace(/[^0-9A-Za-z.-_%+~!]/g, "");
     showError(email, emailError, "Enter a valid email");
     return false;
   } else {
@@ -104,6 +144,7 @@ function validateInterest() {
     showError(interest, interestError, "Interest must be between 4.5–20");
     return false;
   } else {
+    interest.value = Number(interest.value).toFixed(1);
     clearError(interest, interestError);
     return true;
   }
@@ -154,8 +195,14 @@ function validateAmount() {
   const amount = document.getElementById("amount");
   const amountError = document.getElementById("amountError");
   amountRange.value = amount.value;
-  const formatAmount = amount.value.replace(",", "");
-  if (!amount.value) {
+  const formatAmount = amount.value.replace(/[^0-9]/g, "");
+  num = amount.value;
+  if (Number(formatAmount) > 100000) {
+    amount.value = "500";
+    showError(amount, amountError, "Amount must be between 500–100000");
+    setTimeout(() => clearError(amount, amountError), 1500);
+    return false;
+  } else if (!amount.value) {
     showError(amount, amountError, "Amount is required");
     return false;
   } else if (!/^[0-9,]+$/.test(amount.value)) {
@@ -165,26 +212,19 @@ function validateAmount() {
   } else if (Number(formatAmount) < 500 || Number(formatAmount) > 100000) {
     showError(amount, amountError, "Amount must be between 500–100000");
     return false;
-  } else {
-    clearError(amount, amountError);
-    return true;
-  }
-}
-function formatAmount() {
-  const amount = document.getElementById("amount");
-  const formatAmount = amount.value.replace(",", "");
-  let num = amount.value.replace(/[^0-9]/g, "");
-  if (Number(formatAmount) < 500 || Number(formatAmount) > 100000) {
-    showError(amount, amountError, "Amount must be between 500–100000");
+  } else if (Number(formatAmount) % 10 !== 0) {
+    showError(amount, amountError, "Amount must be multiples of 10");
     return false;
   } else if (num.replace(/,/g, "").length > 3) {
     let lastThree = num.replace(/,/g, "").slice(-3);
     let otherNumbers = num.replace(/,/g, "").slice(0, -3);
     otherNumbers = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",");
     amount.value = otherNumbers + "," + lastThree;
+    clearError(amount, amountError);
     return true;
   } else {
     amount.value = num.replace(/,/g, "");
+    clearError(amount, amountError);
     return true;
   }
 }
@@ -206,8 +246,10 @@ function validateForm() {
   let valid = true;
 
   if (!validateTitle()) valid = false;
+  if (!checkFirstName()) valid = false;
   if (!validateFirstName()) valid = false;
   if (!validateLastName()) valid = false;
+  if (!validateMobileLength()) valid = false;
   if (!validateMobile()) valid = false;
   if (!validateEmail()) valid = false;
   if (!validateInterest()) valid = false;
@@ -215,7 +257,6 @@ function validateForm() {
   if (!validateAppointmentTime()) valid = false;
   if (!validateAppointmentVenue()) valid = false;
   if (!validateAmount()) valid = false;
-  if (!formatAmount()) valid = false;
 
   return valid;
 }
@@ -262,7 +303,6 @@ function submit_form(event) {
       "interest_rate",
       document.getElementById("interest").value
     );
-    alert("Form submitted successfully!");
     window.location.href = "preview.html";
   }
 }

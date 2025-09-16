@@ -48,9 +48,11 @@ form {
 .appointment-form input:focus,
 .appointment-form select:focus {
   border-color: #007bff;
+  box-shadow: 0 6px 20px rgba(45, 42, 225, 0.08);
 }
 #phone-group:focus-within {
   border-color: #007bff;
+  box-shadow: 0 6px 20px rgba(45, 42, 225, 0.08);
 }
 
 .appointment-form label {
@@ -78,15 +80,19 @@ form {
 
 #phone-group select {
   border: none;
+  color: #777;
   outline: none;
   padding: 14px;
   width: 90px;
   font-size: 14px;
   background: white;
 }
-#phone-group select:focus {
-  background: #ccc;
+#phone-group select:focus,
+#phone-group input:focus ~ #country-code {
+  color: #777;
+  background-color: white;
 }
+
 #phone-group select,
 #phone-group input {
   border-radius: 6px;
@@ -158,9 +164,22 @@ button:hover {
   .form-row {
     grid-template-columns: 1fr;
   }
+  .appointment-form,
+  .appointment-form-amount,
+  #amount,
+  #amount_range,
+  .amount-row,
+  #title-options,
+  #phone-group,
+  #phone-wrapper,
+  #appointment-time,
+  #appointment-venue {
+    max-width: 280px;
+  }
 }
 input[type="range"] {
   padding: 0%;
+  width: 600px;
   margin: 50px;
   color: #007bff;
 }
@@ -170,7 +189,8 @@ input[type="range"] {
   -moz-appearance: none;
 }
 
-.appointment-form select:focus {
+.appointment-form select:focus,
+#phone-group:focus ~ #country-code {
   appearance: auto;
   -webkit-appearance: menulist;
   -moz-appearance: menulist;
@@ -192,4 +212,67 @@ input.error,
 select.error,
 #phone-group.error {
   border-color: red;
+}
+.appointment-form select:hover,
+.appointment-form input:hover,
+#phone-group:hover {
+  border-color: #007bff;
+  box-shadow: 0 6px 20px rgba(45, 42, 225, 0.08);
+}
+.amount-row {
+  justify-content: center;
+  text-align: center;
+}
+.appointment-form-amount {
+  position: relative;
+  width: 100%;
+}
+
+.appointment-form-amount input {
+  width: 288.3px;
+  max-height: 47.33px;
+  padding: 14px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  background: white;
+  transition: border 0.2s ease;
+}
+
+.appointment-form-amount input:focus,
+.appointment-form-amount input:hover {
+  border-color: #007bff;
+  box-shadow: 0 6px 20px rgba(45, 42, 225, 0.08);
+}
+
+.appointment-form-amount label {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 16px;
+  color: #777;
+  pointer-events: none;
+  transition: 0.2s ease all;
+  background: white;
+  padding: 0 6px;
+}
+.appointment-form-amount input:focus + label,
+.appointment-form-amount #amount:not(:placeholder-shown) + label,
+.appointment-form-amount input:has(:not([value=""])) + label,
+.appointment-form-amount:has(input[type="range"]:not([value=""])) #amountLabel {
+  top: -8px;
+  left: 4px;
+  font-size: 12px;
+  color: #007bff;
+  z-index: 1;
+}
+#range-start {
+  margin-left: -15px;
+}
+#range-end {
+  margin-left: 550px;
+}
+#phone-group.focused select {
+  color: #777;
 }

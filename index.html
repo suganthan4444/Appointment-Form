@@ -12,7 +12,12 @@
       <h1 id="title">Appointment Form</h1>
       <div class="form-row">
         <div class="appointment-form">
-          <select id="title-options" oninput="validateTitle()" required>
+          <select
+            id="title-options"
+            oninput="validateTitle()"
+            autocomplete="off"
+            required
+          >
             <option value="" disabled selected hidden></option>
             <option value="Mr.">Mr</option>
             <option value="Ms.">Ms</option>
@@ -27,7 +32,10 @@
             type="text"
             id="first-name"
             oninput="validateFirstName()"
+            onchange="validateFirstName()"
+            onblur="checkFirstName()"
             placeholder=" "
+            autocomplete="off"
             required
           />
           <label for="first-name">First Name</label>
@@ -39,7 +47,9 @@
             type="text"
             id="last-name"
             oninput="validateLastName()"
+            onchange="validateLastName()"
             placeholder=" "
+            autocomplete="fake"
             required
           />
           <label for="last-name">Last Name</label>
@@ -51,8 +61,8 @@
         <div id="appointment-form">
           <div id="phone-wrapper">
             <div id="phone-group">
-              <select id="country-code" oninput="validateMobile()" required>
-                <option value="" disabled selected hidden></option>
+              <select id="country-code" required>
+                <option value="" hidden selected hidden></option>
                 <option value="+91">🇮🇳 +91</option>
                 <option value="+1">🇺🇸 +1</option>
                 <option value="+44">🇬🇧 +44</option>
@@ -64,6 +74,9 @@
                 placeholder=" "
                 inputmode="numeric"
                 oninput="validateMobile()"
+                onchange="validateMobile()"
+                onblur="validateMobileLength()"
+                autocomplete="fake"
                 required
               />
               <label id="mobileLabel">Mobile Number</label>
@@ -77,7 +90,9 @@
             type="email"
             id="email"
             oninput="validateEmail()"
+            onchange="validateEmail()"
             placeholder=" "
+            autocomplete="fake"
             required
           />
           <label for="email">Email</label>
@@ -89,6 +104,7 @@
             type="number"
             id="interest"
             oninput="validateInterest()"
+            onchange="validateInterest()"
             placeholder=""
             min="4.5"
             value="4.5"
@@ -148,23 +164,25 @@
         </div>
       </div>
 
-      <div class="amount-row">
-        <div class="appointment-form">
+      <div class="form-row">
+        <div class="appointment-form-amount">
           <input
             type="text"
             id="amount"
             placeholder=" "
             oninput="validateAmount()"
-            onchange="formatAmount()"
+            onchange="validateAmount()"
+            autocomplete="fake"
             required
           />
-          <label for="amount">Amount</label>
+          <label for="amount" id="amountLabel">Amount</label>
           <div class="error-message" id="amountError"></div>
         </div>
         <br />
 
         <div class="appointment-form">
           <span id="range-start">500</span>
+          <span id="range-end">100000</span>
           <input
             type="range"
             id="amount_range"
@@ -173,13 +191,63 @@
             step="10"
             value="500"
             style="margin: 0 10px; flex: 1"
-            oninput="amount.value = amount_range.value"
           />
-          <span id="range-end">100000</span>
         </div>
       </div>
 
       <div id="button"><button id="submit" type="submit">Submit</button></div>
     </form>
+    <script>
+      const amount = document.getElementById("amount");
+      const amountRange = document.getElementById("amount_range");
+
+      amountRange.addEventListener("input", () => {
+        amount.value = amountRange.value;
+        validateAmount();
+      });
+      const countryCode = document.getElementById("country-code");
+      const mobile = document.getElementById("mobile-number");
+      const phoneGroup = document.getElementById("phone-group");
+      countryCode.addEventListener("focus", () => {
+        countryCode.value = "+91";
+      });
+      countryCode.addEventListener("blur", () => {
+        if (!mobile.value && countryCode.value == "+91") {
+          countryCode.value = "";
+        }
+      });
+      mobile.addEventListener("focus", () => {
+        if (countryCode.value == "+91") {
+          countryCode.value = "+91";
+        } else if (countryCode.value == "") {
+          countryCode.value = "+91";
+        } else {
+          countryCode.value = countryCode.value;
+        }
+      });
+      mobile.addEventListener("blur", () => {
+        if (!mobile.value && countryCode.value == "+91") {
+          countryCode.value = "";
+        }
+      });
+      mobile.addEventListener("keydown", function (e) {
+        const controlKeys = [
+          "Backspace",
+          "Delete",
+          "ArrowLeft",
+          "ArrowRight",
+          "Tab",
+          "Enter",
+        ];
+
+        if (
+          !controlKeys.includes(e.key) &&
+          this.value.length >= 10 &&
+          /^\d$/.test(e.key)
+        ) {
+          e.preventDefault();
+        }
+      });
+    </script>
   </body>
 </html>
