@@ -42,6 +42,8 @@ function checkFirstName() {
       "First name should contain two letters or more"
     );
     return false;
+  } else {
+    return true;
   }
 }
 
@@ -245,18 +247,54 @@ function clearError(input, errorElement) {
 function validateForm() {
   let valid = true;
 
-  if (!validateTitle()) valid = false;
-  if (!checkFirstName()) valid = false;
-  if (!validateFirstName()) valid = false;
-  if (!validateLastName()) valid = false;
-  if (!validateMobileLength()) valid = false;
-  if (!validateMobile()) valid = false;
-  if (!validateEmail()) valid = false;
-  if (!validateInterest()) valid = false;
-  if (!validateAppointmentDate()) valid = false;
-  if (!validateAppointmentTime()) valid = false;
-  if (!validateAppointmentVenue()) valid = false;
-  if (!validateAmount()) valid = false;
+  if (!validateTitle()) {
+    console.log("title");
+    valid = false;
+  }
+  if (!checkFirstName()) {
+    console.log("fname");
+    valid = false;
+  }
+  if (!validateFirstName()) {
+    console.log("valfname");
+    valid = false;
+  }
+  if (!validateLastName()) {
+    console.log("lname");
+    valid = false;
+  }
+  if (!validateMobileLength()) {
+    console.log("valmobl");
+    valid = false;
+  }
+  if (!validateMobile()) {
+    console.log("mob");
+    valid = false;
+  }
+  if (!validateEmail()) {
+    console.log("email");
+    valid = false;
+  }
+  if (!validateInterest()) {
+    console.log("int");
+    valid = false;
+  }
+  if (!validateAppointmentDate()) {
+    console.log("date");
+    valid = false;
+  }
+  if (!validateAppointmentTime()) {
+    console.log("time");
+    valid = false;
+  }
+  if (!validateAppointmentVenue()) {
+    console.log("venue");
+    valid = false;
+  }
+  if (!validateAmount()) {
+    console.log("amnt");
+    valid = false;
+  }
 
   return valid;
 }
@@ -264,7 +302,6 @@ function validateForm() {
 function submit_form(event) {
   event.preventDefault();
   if (validateForm()) {
-    // save to session storage and redirect
     sessionStorage.setItem(
       "title",
       document.getElementById("title-options").value

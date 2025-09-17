@@ -79,7 +79,7 @@
                 autocomplete="fake"
                 required
               />
-              <label id="mobileLabel">Mobile Number</label>
+              <label for="mobile-number">Mobile Number</label>
             </div>
             <div class="error-message" id="mobileError"></div>
           </div>
@@ -165,7 +165,7 @@
       </div>
 
       <div class="form-row">
-        <div class="appointment-form-amount">
+        <div class="appointment-form">
           <input
             type="text"
             id="amount"
@@ -178,11 +178,9 @@
           <label for="amount" id="amountLabel">Amount</label>
           <div class="error-message" id="amountError"></div>
         </div>
-        <br />
-
+      </div>
+      <div class="form-row">
         <div class="appointment-form">
-          <span id="range-start">500</span>
-          <span id="range-end">100000</span>
           <input
             type="range"
             id="amount_range"
@@ -192,6 +190,7 @@
             value="500"
             style="margin: 0 10px; flex: 1"
           />
+          <p>Enter amount between 500 and 100000</p>
         </div>
       </div>
 
