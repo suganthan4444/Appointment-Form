@@ -2,12 +2,12 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: #f4f6fa;
   margin: 0;
-  padding: 40px;
+  padding: 20px;
 }
 
 form {
   background: #fff;
-  padding: 30px;
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   max-width: 1000px;
@@ -44,8 +44,6 @@ form {
 .appointment-form input[type="date"] {
   width: 90%;
   height: 35%;
-}
-.appointment-form input[type="number"] {
 }
 .appointment-form input:focus,
 .appointment-form select:focus,
@@ -196,9 +194,10 @@ button:hover {
   text-align: center;
 }
 
-@media (max-width: 900px) {
+@media only screen and (max-width: 900px) {
   .form-row {
     grid-template-columns: 1fr;
+    margin-bottom: 0px;
   }
   .appointment-form,
   #amount,
@@ -214,15 +213,27 @@ button:hover {
   #title-options,
   #appointment-time,
   #appointment-venue,
-  #phone-group {
-    max-width: 95%;
-  }
-  #phone-group {
-    margin-left: 10px;
+  #phone-group,
+  #phone-wrapper {
+    max-width: 100%;
   }
   form {
     text-align: center;
     width: auto;
-    max-width: fit-content;
+    max-width: max-content;
+  }
+  input[type="range"] {
+    width: 95%;
+  }
+}
+@media (max-width: 360px) {
+  body {
+    padding: auto;
+  }
+  #title-options,
+  #appointment-time,
+  #appointment-venue,
+  #phone-group {
+    max-width: 100%;
   }
 }

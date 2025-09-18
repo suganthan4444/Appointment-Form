@@ -35,7 +35,7 @@ function validateFirstName() {
 function checkFirstName() {
   const firstName = document.getElementById("first-name");
   const firstNameError = document.getElementById("firstNameError");
-  if (firstName.value.length < 2) {
+  if (firstName.value.length == 1) {
     showError(
       firstName,
       firstNameError,
