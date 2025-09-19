@@ -195,6 +195,10 @@ button:hover {
 }
 
 @media only screen and (max-width: 900px) {
+  body {
+    width: 100vw;
+    padding: 0px;
+  }
   .form-row {
     grid-template-columns: 1fr;
     margin-bottom: 0px;
@@ -219,7 +223,7 @@ button:hover {
   }
   form {
     text-align: center;
-    width: auto;
+    width: 100vw;
     max-width: max-content;
   }
   input[type="range"] {

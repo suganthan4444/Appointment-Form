@@ -247,6 +247,10 @@
           e.preventDefault();
         }
       });
+      datePicker = document.getElementById("appointment-date");
+      datePicker.addEventListener("focus", function () {
+        this.showPicker?.();
+      });
     </script>
   </body>
 </html>
