@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Form</title>
     <link rel="stylesheet" href="index.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-doughnutlabel@2.0.3"></script>
     <script src="index.js"></script>
   </head>
   <body>
@@ -55,9 +57,7 @@
           <label for="last-name">Last Name</label>
           <div class="error-message" id="lastNameError"></div>
         </div>
-      </div>
 
-      <div class="form-row">
         <div id="appointment-form">
           <div id="phone-wrapper">
             <div id="phone-group">
@@ -101,27 +101,11 @@
 
         <div class="appointment-form">
           <input
-            type="number"
-            id="interest"
-            oninput="validateInterest()"
-            onchange="validateInterest()"
-            placeholder=""
-            min="4.5"
-            value="4.5"
-            step=".1"
-            max="20"
-          />
-          <label for="interest">Interest</label>
-          <div class="error-message" id="interestError"></div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="appointment-form">
-          <input
-            type="date"
+            type="text"
             id="appointment-date"
             oninput="validateAppointmentDate()"
+            onfocus="this.type='date'"
+            onblur="if(!this.value) this.type='text'"
             placeholder=""
             required
           />
@@ -164,57 +148,166 @@
         </div>
       </div>
 
-      <div class="form-row">
+      <div class="loan-row">
         <div class="appointment-form">
           <input
             type="text"
             id="amount"
             placeholder=" "
             oninput="validateAmount()"
-            onchange="validateAmount()"
+            onblur="validateAmountChange()"
             autocomplete="fake"
             required
           />
-          <label for="amount" id="amountLabel">Amount</label>
+          <label for="amount" id="amountLabel">Loan Amount</label>
           <div class="error-message" id="amountError"></div>
         </div>
-      </div>
-      <div class="form-row">
+
+        <div class="appointment-form">
+          <div class="range-wrapper">
+            <span class="range-label">50K</span>
+            <input
+              type="range"
+              id="amount_range"
+              class="range-input"
+              min="50000"
+              max="5000000"
+              step="1000"
+              value="50000"
+              style="margin: 0 10px; flex: 1"
+            />
+            <span class="range-label">50L</span>
+          </div>
+        </div>
         <div class="appointment-form">
           <input
-            type="range"
-            id="amount_range"
-            min="500"
-            max="100000"
-            step="10"
-            value="500"
-            style="margin: 0 10px; flex: 1"
+            type="number"
+            id="interest"
+            placeholder=" "
+            min="9.9"
+            max="22"
+            step="0.1"
+            onfocus="this.value='9.9'"
+            oninput="validateInterest()"
+            onblur="validateInterestChange()"
+            autocomplete="fake"
+            required
           />
-          <p>Enter amount between 500 and 100000</p>
+          <label for="interest" id="interestLabel">Interest</label>
+          <div class="error-message" id="interestError"></div>
+        </div>
+
+        <div class="appointment-form">
+          <div class="range-wrapper">
+            <span class="range-label">9.9%</span>
+            <input
+              type="range"
+              id="interest_range"
+              class="range-input"
+              min="9.9"
+              max="22"
+              step="0.1"
+              value="9.9"
+              style="margin: 0 10px; flex: 1"
+            />
+            <span class="range-label">22%</span>
+          </div>
+        </div>
+        <div class="appointment-form">
+          <input
+            type="number"
+            id="period"
+            placeholder=" "
+            oninput="validatePeriod()"
+            onblur="validatePeriodChange()"
+            autocomplete="fake"
+            required
+          />
+          <label for="period" id="periodLabel">Period</label>
+          <div class="error-message" id="periodError"></div>
+        </div>
+
+        <div class="appointment-form">
+          <div class="range-wrapper">
+            <span class="range-label">12</span>
+            <input
+              type="range"
+              id="period_range"
+              class="range-input"
+              min="12"
+              max="84"
+              step="1"
+              value="12"
+              style="margin: 0 10px; flex: 1"
+            />
+            <span class="range-label">84</span>
+          </div>
         </div>
       </div>
 
+      <div class="result-row">
+        <div class="result-text">
+          <div class="result">
+            <label for="loan-amount">Loan Amount</label><br />
+            <input type="text" id="loan-amount" value="" disabled />
+          </div>
+
+          <div class="result">
+            <label for="loan-interest">Loan Interest</label><br />
+            <input type="text" id="loan-interest" value="" disabled />
+          </div>
+
+          <div class="result">
+            <label for="total-amount">Amount Payable</label><br />
+            <input type="text" id="total-amount" value="" disabled />
+          </div>
+        </div>
+        <div class="result-chart">
+          <canvas id="loanGauge"></canvas>
+        </div>
+      </div>
       <div id="button"><button id="submit" type="submit">Submit</button></div>
     </form>
     <script>
       const amount = document.getElementById("amount");
       const amountRange = document.getElementById("amount_range");
+      const interest = document.getElementById("interest");
+      const interestRange = document.getElementById("interest_range");
+      const period = document.getElementById("period");
+      const periodRange = document.getElementById("period_range");
+      const countryCode = document.getElementById("country-code");
+      const mobile = document.getElementById("mobile-number");
+      const phoneGroup = document.getElementById("phone-group");
+      const datePicker = document.getElementById("appointment-date");
 
       amountRange.addEventListener("input", () => {
         amount.value = amountRange.value;
         validateAmount();
+        calculateResult();
       });
-      const countryCode = document.getElementById("country-code");
-      const mobile = document.getElementById("mobile-number");
-      const phoneGroup = document.getElementById("phone-group");
+
+      interestRange.addEventListener("input", () => {
+        interest.value = interestRange.value;
+        validateInterest();
+        calculateResult();
+      });
+
+      periodRange.addEventListener("input", () => {
+        period.value = periodRange.value;
+        validatePeriod();
+        calculateResult();
+      });
+
       countryCode.addEventListener("focus", () => {
         countryCode.value = "+91";
       });
+
       countryCode.addEventListener("blur", () => {
         if (!mobile.value && countryCode.value == "+91") {
           countryCode.value = "";
         }
       });
+
       mobile.addEventListener("focus", () => {
         if (countryCode.value == "+91") {
           countryCode.value = "+91";
@@ -224,11 +317,13 @@
           countryCode.value = countryCode.value;
         }
       });
+
       mobile.addEventListener("blur", () => {
         if (!mobile.value && countryCode.value == "+91") {
           countryCode.value = "";
         }
       });
+
       mobile.addEventListener("keydown", function (e) {
         const controlKeys = [
           "Backspace",
@@ -247,7 +342,7 @@
           e.preventDefault();
         }
       });
-      datePicker = document.getElementById("appointment-date");
+
       datePicker.addEventListener("focus", function () {
         this.showPicker?.();
       });

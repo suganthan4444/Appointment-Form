@@ -36,12 +36,16 @@
         <td><span id="appointment-venue"></span></td>
       </tr>
       <tr>
+        <td>Loan Amount</td>
+        <td><span id="amount"></span></td>
+      </tr>
+      <tr>
         <td>Interest</td>
         <td><span id="interest"></span></td>
       </tr>
       <tr>
-        <td>Amount</td>
-        <td><span id="amount"></span></td>
+        <td>EMI</td>
+        <td><span id="emi"></span></td>
       </tr>
     </table>
     <script>
@@ -56,7 +60,10 @@
       const appointmentVenue =
         sessionStorage.getItem("appointment_venue") || "";
       const interestRate = sessionStorage.getItem("interest_rate") || "";
-      const amount = sessionStorage.getItem("amount") || "";
+      const period = sessionStorage.getItem("loan_period");
+      const amount = sessionStorage.getItem("amount");
+      const interest = sessionStorage.getItem("interest_amount");
+      const emi = sessionStorage.getItem("emi");
 
       document.getElementById("full-name").textContent =
         `${title} ${firstName} ${lastName}`.trim();
@@ -69,9 +76,9 @@
         `${appointmentTime}`.trim();
       document.getElementById("appointment-venue").textContent =
         `${appointmentVenue}`.trim();
-      document.getElementById("interest").textContent =
-        `${interestRate}%`.trim();
+      document.getElementById("interest").textContent = `${interest}`.trim();
       document.getElementById("amount").textContent = `${amount}`.trim();
+      document.getElementById("emi").textContent = `${emi}`.trim();
     </script>
   </body>
 </html>

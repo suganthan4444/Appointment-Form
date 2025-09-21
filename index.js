@@ -1,3 +1,63 @@
+let loanChart; // store chart instance
+
+function updateChart(principal, interest) {
+  const total = principal + interest;
+  const ctx = document.getElementById("loanGauge").getContext("2d");
+
+  // Destroy old chart before drawing new one
+  if (loanChart) {
+    loanChart.destroy();
+  }
+
+  loanChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Principal", "Interest"],
+      datasets: [
+        {
+          data: [principal, interest],
+          backgroundColor: ["#007bff", "#ff6b6b"],
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      rotation: -90,
+      circumference: 180,
+      cutout: "70%",
+      plugins: {
+        legend: {
+          onClick: null, // 🔹 disables toggle on click
+        },
+        doughnutlabel: {
+          labels: [
+            {
+              text: `₹${total.toLocaleString("en-IN")}`, // Indian format
+              font: { size: 24, weight: "bold" },
+            },
+            { text: "Total Loan" },
+          ],
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const value = context.raw; // raw dataset value
+              return `${context.label}: ₹${Number(value).toLocaleString(
+                "en-IN"
+              )}`;
+            },
+          },
+        },
+      },
+      elements: {
+        arc: {
+          hoverOffset: 0, // 🚫 no slice growth/shrink on hover
+        },
+      },
+    },
+  });
+}
+
 // Title
 function validateTitle() {
   const title = document.getElementById("title-options");
@@ -135,23 +195,6 @@ function validateEmail() {
   }
 }
 
-// Interest
-function validateInterest() {
-  const interest = document.getElementById("interest");
-  const interestError = document.getElementById("interestError");
-  if (!interest.value) {
-    showError(interest, interestError, "Interest is required");
-    return false;
-  } else if (interest.value && (interest.value < 4.5 || interest.value > 20)) {
-    showError(interest, interestError, "Interest must be between 4.5–20");
-    return false;
-  } else {
-    interest.value = Number(interest.value).toFixed(1);
-    clearError(interest, interestError);
-    return true;
-  }
-}
-
 // Appointment date
 function validateAppointmentDate() {
   const date = document.getElementById("appointment-date");
@@ -196,38 +239,172 @@ function validateAmount() {
   const amountRange = document.getElementById("amount_range");
   const amount = document.getElementById("amount");
   const amountError = document.getElementById("amountError");
-  amountRange.value = amount.value;
   const formatAmount = amount.value.replace(/[^0-9]/g, "");
+  amountRange.value = formatAmount;
   num = amount.value;
-  if (Number(formatAmount) > 100000) {
-    amount.value = "500";
-    showError(amount, amountError, "Amount must be between 500–100000");
+  if (Number(formatAmount) > 5000000) {
+    amount.value = "5000000";
+    showError(amount, amountError, "Amount must be between 50K – 50Lakhs");
     setTimeout(() => clearError(amount, amountError), 1500);
-    return false;
-  } else if (!amount.value) {
-    showError(amount, amountError, "Amount is required");
     return false;
   } else if (!/^[0-9,]+$/.test(amount.value)) {
     amount.value = amount.value.replace(/[^0-9,]/g, "");
     showError(amount, amountError, "Amount should not contain Letters");
     return false;
-  } else if (Number(formatAmount) < 500 || Number(formatAmount) > 100000) {
-    showError(amount, amountError, "Amount must be between 500–100000");
-    return false;
-  } else if (Number(formatAmount) % 10 !== 0) {
-    showError(amount, amountError, "Amount must be multiples of 10");
-    return false;
   } else if (num.replace(/,/g, "").length > 3) {
-    let lastThree = num.replace(/,/g, "").slice(-3);
-    let otherNumbers = num.replace(/,/g, "").slice(0, -3);
-    otherNumbers = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",");
-    amount.value = otherNumbers + "," + lastThree;
+    let raw = num.replace(/,/g, "");
+
+    let lastThree = raw.slice(-3);
+    let otherNumbers = raw.slice(0, -3);
+
+    if (otherNumbers !== "") {
+      otherNumbers = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+      amount.value = otherNumbers + "," + lastThree;
+    } else {
+      amount.value = lastThree;
+    }
+
     clearError(amount, amountError);
     return true;
   } else {
     amount.value = num.replace(/,/g, "");
     clearError(amount, amountError);
     return true;
+  }
+}
+
+function validateAmountChange() {
+  const amount = document.getElementById("amount");
+  const amountError = document.getElementById("amountError");
+  const formatAmount = amount.value.replace(/[^0-9]/g, "");
+  if (!amount.value) {
+    showError(amount, amountError, "Amount is required");
+    return false;
+  } else if (Number(formatAmount) < 50000) {
+    amount.value = "50000";
+    showError(amount, amountError, "Amount must be between 50K – 50Lakhs");
+    setTimeout(() => clearError(amount, amountError), 1500);
+    return false;
+  } else if (Number(formatAmount) % 1000 !== 0) {
+    showError(amount, amountError, "Amount must be multiples of 1000");
+    return false;
+  } else {
+    return true;
+  }
+}
+
+// Interest
+function validateInterest() {
+  const interest = document.getElementById("interest");
+  const interestError = document.getElementById("interestError");
+  const interestRange = document.getElementById("interest_range");
+  interestRange.value = interest.value;
+  if (interest.value > 22) {
+    interest.value = 22;
+    showError(interest, interestError, "Interest must be between 9.9% – 22%");
+    setTimeout(() => clearError(interest, interestError), 1500);
+    return false;
+  } else if (interest.value > 9.9) {
+    interest.value = Number(interest.value).toFixed(1);
+    clearError(interest, interestError);
+    return true;
+  }
+}
+
+function validateInterestChange() {
+  const interest = document.getElementById("interest");
+  const interestError = document.getElementById("interestError");
+  const interestRange = document.getElementById("interest_range");
+  interestRange.value = interest.value;
+  if (!interest.value) {
+    showError(interest, interestError, "Interest is required");
+    return false;
+  } else if (interest.value < 9.9) {
+    interest.value = 9.9;
+    showError(interest, interestError, "Interest must be between 9.9% – 22%");
+    setTimeout(() => clearError(interest, interestError), 1500);
+    return false;
+  } else {
+    interest.value = Number(interest.value).toFixed(1);
+    clearError(interest, interestError);
+    return true;
+  }
+}
+
+// Period
+function validatePeriod() {
+  const period = document.getElementById("period");
+  const periodError = document.getElementById("periodError");
+  const periodRange = document.getElementById("period_range");
+  periodRange.value = period.value;
+  if (period.value > 84) {
+    period.value = 84;
+    showError(period, periodError, "Period must be between 12 – 84 months");
+    setTimeout(() => clearError(period, periodError), 1500);
+    return false;
+  } else {
+    period.value = Number(period.value).toFixed(0);
+    clearError(period, periodError);
+    return true;
+  }
+}
+
+function validatePeriodChange() {
+  const period = document.getElementById("period");
+  const periodError = document.getElementById("periodError");
+  if (!period.value) {
+    showError(period, periodError, "Period is required");
+    return false;
+  } else if (period.value < 12) {
+    period.value = 12;
+    showError(period, periodError, "Period must be between 12 – 84 months");
+    setTimeout(() => clearError(period, periodError), 1500);
+    return false;
+  } else {
+    period.value = Number(period.value).toFixed(0);
+    clearError(period, periodError);
+    return true;
+  }
+}
+
+function calculateResult() {
+  const amount = document.getElementById("amount");
+  const formatAmount = amount.value.replace(/[^0-9]/g, "");
+  const interest = parseFloat(document.getElementById("interest").value);
+  const period = parseFloat(document.getElementById("period").value);
+  const loanAmount = document.getElementById("loan-amount");
+  const loanInterest = document.getElementById("loan-interest");
+  const totalAmount = document.getElementById("total-amount");
+  const resultChart = document.getElementById("result-chart");
+
+  const monthlyInterest = interest / 1200;
+  const emi =
+    (formatAmount * monthlyInterest * (1 + monthlyInterest) ** period) /
+    ((1 + monthlyInterest) ** period - 1);
+  if (formatAmount && interest && period) {
+    const loan_amount = Number(formatAmount);
+    const interest_amount = Math.round(emi * period - loan_amount);
+    const total_amount = loan_amount + interest_amount;
+    loanAmount.value = amount.value;
+    // Format function
+    function formatIndianNumber(num) {
+      if (num < 1000) return num.toString();
+      let str = num.toString();
+      let lastThree = str.slice(-3);
+      let otherNumbers = str.slice(0, -3);
+      if (otherNumbers !== "") {
+        otherNumbers = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+        return otherNumbers + "," + lastThree;
+      } else {
+        return lastThree;
+      }
+    }
+
+    loanInterest.value = formatIndianNumber(interest_amount);
+    totalAmount.value = formatIndianNumber(total_amount);
+    sessionStorage.setItem("emiRaw", Math.round(emi));
+    sessionStorage.setItem("emi", formatIndianNumber(Math.round(emi)));
+    updateChart(loan_amount, interest_amount);
   }
 }
 
@@ -275,10 +452,6 @@ function validateForm() {
     console.log("email");
     valid = false;
   }
-  if (!validateInterest()) {
-    console.log("int");
-    valid = false;
-  }
   if (!validateAppointmentDate()) {
     console.log("date");
     valid = false;
@@ -293,6 +466,26 @@ function validateForm() {
   }
   if (!validateAmount()) {
     console.log("amnt");
+    valid = false;
+  }
+  if (!validateAmountChange()) {
+    console.log("amnt");
+    valid = false;
+  }
+  if (!validateInterest()) {
+    console.log("int");
+    valid = false;
+  }
+  if (!validateInterestChange()) {
+    console.log("int");
+    valid = false;
+  }
+  if (!validatePeriod()) {
+    console.log("int");
+    valid = false;
+  }
+  if (!validatePeriodChange()) {
+    console.log("int");
     valid = false;
   }
 
@@ -331,14 +524,26 @@ function submit_form(event) {
       "appointment_time",
       document.getElementById("appointment-time").value
     );
-    sessionStorage.setItem("amount", document.getElementById("amount").value);
     sessionStorage.setItem(
       "appointment_venue",
       document.getElementById("appointment-venue").value
     );
+    sessionStorage.setItem("amount", document.getElementById("amount").value);
     sessionStorage.setItem(
       "interest_rate",
       document.getElementById("interest").value
+    );
+    sessionStorage.setItem(
+      "loan_period",
+      document.getElementById("period").value
+    );
+    sessionStorage.setItem(
+      "total_amount",
+      document.getElementById("total-amount").value
+    );
+    sessionStorage.setItem(
+      "interest_amount",
+      document.getElementById("loan-interest").value
     );
     window.location.href = "preview.html";
   }
