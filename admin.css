@@ -1,0 +1,17 @@
+body {
+  margin: 50px;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+.search-fields {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+}
+.total-search {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.single-search {
+  display: grid;
+  grid-template-columns: 1fr;
+}

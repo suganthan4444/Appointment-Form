@@ -1,61 +1,80 @@
-let loanChart; // store chart instance
+let loanChart;
 
 function updateChart(principal, interest) {
   const total = principal + interest;
   const ctx = document.getElementById("loanGauge").getContext("2d");
 
-  // Destroy old chart before drawing new one
-  if (loanChart) {
-    loanChart.destroy();
-  }
+  const centerText = {
+    id: "centerText",
+    beforeDraw(chart) {
+      const { ctx, width } = chart;
+      const { height } = chart.chartArea;
 
-  loanChart = new Chart(ctx, {
-    type: "doughnut",
-    data: {
-      labels: ["Principal", "Interest"],
-      datasets: [
-        {
-          data: [principal, interest],
-          backgroundColor: ["#007bff", "#ff6b6b"],
-          borderWidth: 1,
-        },
-      ],
+      const totalValue = chart.config.options.plugins.centerText.total;
+
+      ctx.save();
+
+      ctx.font = "bold 20px Arial";
+      ctx.fillStyle = "#000";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(
+        `₹${totalValue.toLocaleString("en-IN")}`,
+        width / 2,
+        height / 1.3
+      );
+
+      ctx.font = "14px Arial";
+      ctx.fillStyle = "#666";
+      ctx.fillText("Total Amount Payable", width / 2, height / 1.1);
+
+      ctx.restore();
     },
-    options: {
-      rotation: -90,
-      circumference: 180,
-      cutout: "70%",
-      plugins: {
-        legend: {
-          onClick: null, // 🔹 disables toggle on click
-        },
-        doughnutlabel: {
-          labels: [
-            {
-              text: `₹${total.toLocaleString("en-IN")}`, // Indian format
-              font: { size: 24, weight: "bold" },
-            },
-            { text: "Total Loan" },
-          ],
-        },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              const value = context.raw; // raw dataset value
-              return `${context.label}: ₹${Number(value).toLocaleString(
-                "en-IN"
-              )}`;
+  };
+
+  if (loanChart) {
+    loanChart.data.datasets[0].data = [principal, interest];
+    loanChart.options.plugins.centerText.total = total;
+    loanChart.update();
+  } else {
+    loanChart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["Principal", "Interest"],
+        datasets: [
+          {
+            data: [principal, interest],
+            backgroundColor: ["#007bff", "#ff6b6b"],
+            borderWidth: 0,
+          },
+        ],
+      },
+      options: {
+        rotation: -90,
+        circumference: 180,
+        cutout: "70%",
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { onClick: null },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                const value = context.raw;
+                return `${context.label}: ₹${Number(value).toLocaleString(
+                  "en-IN"
+                )}`;
+              },
             },
           },
+          centerText: { total }, // ✅ store total inside plugin options
+        },
+        elements: {
+          arc: { hoverOffset: 0 },
         },
       },
-      elements: {
-        arc: {
-          hoverOffset: 0, // 🚫 no slice growth/shrink on hover
-        },
-      },
-    },
-  });
+      plugins: [centerText], // ✅ plugin runs every draw
+    });
+  }
 }
 
 // Title
@@ -183,9 +202,20 @@ function validateEmail() {
   if (!email.value.trim()) {
     showError(email, emailError, "Email is required");
     return false;
-  } else if (
-    !/^[a-zA-Z0-9._%+-~!]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.value)
-  ) {
+  } else {
+    clearError(email, emailError);
+    return true;
+  }
+}
+
+function validateEmailChange() {
+  const email = document.getElementById("email");
+  const emailError = document.getElementById("emailError");
+
+  if (!email.value) {
+    return true;
+  }
+  if (!/^[a-zA-Z0-9._%+-~!]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.value)) {
     email.value = email.value.replace(/[^0-9A-Za-z.-_%+~!]/g, "");
     showError(email, emailError, "Enter a valid email");
     return false;
@@ -195,44 +225,41 @@ function validateEmail() {
   }
 }
 
-// Appointment date
-function validateAppointmentDate() {
-  const date = document.getElementById("appointment-date");
-  const dateError = document.getElementById("dateError");
-  if (!date.value) {
-    showError(date, dateError, "Date is required");
+// Date of Birth
+function validateDOB() {
+  const dob = document.getElementById("date-of-birth");
+  const dobError = document.getElementById("dobError");
+
+  if (!dob.value) {
+    showError(dob, dobError, "DOB is required");
+    return false;
+  }
+
+  const birthDate = new Date(dob.value);
+  const today = new Date();
+
+  // Calculate age
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  const dayDiff = today.getDate() - birthDate.getDate();
+
+  // adjust if birthday hasn't occurred yet this year
+  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    age--;
+  }
+
+  if (age < 18) {
+    showError(dob, dobError, "You must be at least 18 years old");
+    return false;
+  } else if (age > 75) {
+    showError(dob, dobError, "Applicants above 75 are not eligible");
     return false;
   } else {
-    clearError(date, dateError);
+    clearError(dob, dobError);
     return true;
   }
 }
 
-// Appointment time
-function validateAppointmentTime() {
-  const time = document.getElementById("appointment-time");
-  const timeError = document.getElementById("timeError");
-  if (!time.value) {
-    showError(time, timeError, "Time is required");
-    return false;
-  } else {
-    clearError(time, timeError);
-    return true;
-  }
-}
-
-// Venue
-function validateAppointmentVenue() {
-  const venue = document.getElementById("appointment-venue");
-  const venueError = document.getElementById("venueError");
-  if (!venue.value) {
-    showError(venue, venueError, "Venue is required");
-    return false;
-  } else {
-    clearError(venue, venueError);
-    return true;
-  }
-}
 
 // Amount
 function validateAmount() {
@@ -243,7 +270,7 @@ function validateAmount() {
   amountRange.value = formatAmount;
   num = amount.value;
   if (Number(formatAmount) > 5000000) {
-    amount.value = "5000000";
+    amount.value = "50,00,000";
     showError(amount, amountError, "Amount must be between 50K – 50Lakhs");
     setTimeout(() => clearError(amount, amountError), 1500);
     return false;
@@ -281,7 +308,7 @@ function validateAmountChange() {
     showError(amount, amountError, "Amount is required");
     return false;
   } else if (Number(formatAmount) < 50000) {
-    amount.value = "50000";
+    amount.value = "50,000";
     showError(amount, amountError, "Amount must be between 50K – 50Lakhs");
     setTimeout(() => clearError(amount, amountError), 1500);
     return false;
@@ -305,7 +332,6 @@ function validateInterest() {
     setTimeout(() => clearError(interest, interestError), 1500);
     return false;
   } else if (interest.value > 9.9) {
-    interest.value = Number(interest.value).toFixed(1);
     clearError(interest, interestError);
     return true;
   }
@@ -343,7 +369,6 @@ function validatePeriod() {
     setTimeout(() => clearError(period, periodError), 1500);
     return false;
   } else {
-    period.value = Number(period.value).toFixed(0);
     clearError(period, periodError);
     return true;
   }
@@ -376,6 +401,7 @@ function calculateResult() {
   const loanInterest = document.getElementById("loan-interest");
   const totalAmount = document.getElementById("total-amount");
   const resultChart = document.getElementById("result-chart");
+  const resultEmi = document.getElementById("emi");
 
   const monthlyInterest = interest / 1200;
   const emi =
@@ -402,6 +428,7 @@ function calculateResult() {
 
     loanInterest.value = formatIndianNumber(interest_amount);
     totalAmount.value = formatIndianNumber(total_amount);
+    resultEmi.value = formatIndianNumber(Math.round(emi));
     sessionStorage.setItem("emiRaw", Math.round(emi));
     sessionStorage.setItem("emi", formatIndianNumber(Math.round(emi)));
     updateChart(loan_amount, interest_amount);
@@ -452,16 +479,12 @@ function validateForm() {
     console.log("email");
     valid = false;
   }
-  if (!validateAppointmentDate()) {
-    console.log("date");
+  if (!validateEmailChange()) {
+    console.log("email Change");
     valid = false;
   }
-  if (!validateAppointmentTime()) {
-    console.log("time");
-    valid = false;
-  }
-  if (!validateAppointmentVenue()) {
-    console.log("venue");
+  if (!validateDOB()) {
+    console.log("dob");
     valid = false;
   }
   if (!validateAmount()) {
@@ -469,23 +492,23 @@ function validateForm() {
     valid = false;
   }
   if (!validateAmountChange()) {
-    console.log("amnt");
+    console.log("amnt ch");
     valid = false;
   }
   if (!validateInterest()) {
-    console.log("int");
+    console.log("int ");
     valid = false;
   }
   if (!validateInterestChange()) {
-    console.log("int");
+    console.log("int ch");
     valid = false;
   }
   if (!validatePeriod()) {
-    console.log("int");
+    console.log("per");
     valid = false;
   }
   if (!validatePeriodChange()) {
-    console.log("int");
+    console.log("per ch");
     valid = false;
   }
 
@@ -517,16 +540,8 @@ function submit_form(event) {
     );
     sessionStorage.setItem("email", document.getElementById("email").value);
     sessionStorage.setItem(
-      "appointment_date",
-      document.getElementById("appointment-date").value
-    );
-    sessionStorage.setItem(
-      "appointment_time",
-      document.getElementById("appointment-time").value
-    );
-    sessionStorage.setItem(
-      "appointment_venue",
-      document.getElementById("appointment-venue").value
+      "dob",
+      document.getElementById("date-of-birth").value
     );
     sessionStorage.setItem("amount", document.getElementById("amount").value);
     sessionStorage.setItem(

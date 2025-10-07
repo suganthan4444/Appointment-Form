@@ -1,37 +1,79 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: #f4f6fa;
-  margin: 0;
-  padding: 20px;
 }
-
-form {
-  background: #fff;
+#title {
+  font-size: 20px;
+  max-height: 45px;
+}
+#myForm {
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  max-width: 1000px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
   text-align: center;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  column-gap: 50px;
+}
+
+.input-fields {
+  padding: 20px;
+  padding-bottom: 40px;
+  background: #fff;
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 90%;
+  gap: 0px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(45, 42, 225, 0.08);
 }
 .form-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-bottom: 10px;
 }
 .loan-row {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 20px;
-  margin-bottom: 10px;
+  gap: 10px;
 }
+.result-row {
+  border-radius: 10px;
+  background: #fff;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: center;
+  box-shadow: 0 6px 20px rgba(45, 42, 225, 0.08);
+}
+
+button {
+  background: #007bff;
+  color: white;
+  padding: 14px 24px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  align-self: flex-start;
+}
+
+button:hover {
+  background: #0056b3;
+}
+#button {
+  margin-top: -100px;
+  padding-top: 40px;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  text-align: center;
+  background-color: white;
+}
+
 .appointment-form {
   position: relative;
-  width: 100%;
+  width: 90%;
+  max-height: 60%;
+  margin-bottom: 5px;
 }
 .appointment-form input,
 .appointment-form select {
@@ -46,6 +88,9 @@ form {
 }
 .appointment-form select {
   width: 100%;
+}
+#appointment-venue {
+  width: 105%;
 }
 .appointment-form input[type="date"] {
   width: 90%;
@@ -90,6 +135,7 @@ form {
   overflow: visible;
   background: white;
   transition: 0.2s ease all;
+  width: 90%;
 }
 
 #phone-group select {
@@ -134,7 +180,7 @@ form {
 }
 input[type="range"] {
   padding: 0%;
-  width: 600px;
+  width: 100px;
   margin: 50px;
   color: #007bff;
 }
@@ -181,25 +227,6 @@ select.error,
   font-weight: 500;
   z-index: 1;
 }
-
-button {
-  background: #007bff;
-  color: white;
-  padding: 14px 24px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  align-self: flex-start;
-}
-
-button:hover {
-  background: #0056b3;
-}
-#button {
-  text-align: center;
-}
-
 .range-wrapper {
   display: flex;
   align-items: center;
@@ -217,19 +244,14 @@ button:hover {
   flex: 1; /* slider takes the rest of the row */
 }
 
-.result-row {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 150px;
-  margin-bottom: 10px;
-  align-items: center;
-}
 .result {
-  position: relative;
   width: 100%;
 }
+.result label {
+  text-align: left;
+}
 .result-row input {
-  width: 90%;
+  width: 50%;
   padding: 14px;
   font-size: 16px;
   border: 1px solid #ccc;
@@ -237,32 +259,94 @@ button:hover {
   outline: none;
   background: white;
 }
-.result-text {
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 10px;
+.result-table {
+  margin-left: 20px;
+}
+.result-table th {
+  text-align: left;
+}
+
+.result-table th,
+.result-table td {
+  background: #fff; /* so the spacing shows as gap color */
+  padding: 8px 0px;
+  border-radius: 6px; /* optional rounded look */
 }
 
 .result-chart {
+  text-align: center;
+  justify-content: center;
   background: #fff;
   padding: 5px;
   border-radius: 10px;
   height: 95%;
-  max-width: 70%;
+  max-width: 380px;
   border-style: solid;
   border-width: 1px;
   border-color: white;
+  display: grid;
+  place-items: center;
+}
+#loanGuage {
+  max-width: 300px;
+  margin: 10px;
 }
 
-@media only screen and (max-width: 960px) {
-  body {
-    width: 100vw;
-    padding: 0px;
-  }
+#loan-amount,
+#total-amount,
+#loan-interest,
+#emi {
+  border-color: #3abdd7;
+}
+
+#title-options,
+#first-name,
+#last-name,
+#phone-group,
+#email,
+#date-of-birth,
+#amount,
+#interest,
+#period {
+  border-color: rgb(128, 181, 164);
+}
+@media only screen and (max-width: 1260px) {
   .form-row {
     grid-template-columns: repeat(2, 1fr);
     margin-bottom: 0px;
+    gap: 20px;
   }
+  .input-fields {
+    gap: 20px;
+  }
+}
+
+@media only screen and (max-width: 850px) {
+  #myForm {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  .form-row {
+    gap: 20px;
+  }
+  .result-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: center;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
+  #button {
+    margin-top: 0px;
+  }
+  #button {
+    margin-top: -10px;
+  }
+  .input-fields {
+    gap: 30px;
+  }
+
   .appointment-form,
   #amount,
   #amount_range,
@@ -281,22 +365,9 @@ button:hover {
   #phone-wrapper {
     max-width: 100%;
   }
-  form {
-    text-align: center;
-    width: 100vw;
-    max-width: max-content;
-  }
   #myForm input[type="range"] {
     width: 95%;
     color: #007bff;
-  }
-  .result-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin-bottom: 10px;
-    gap: 100px;
-    align-items: center;
-    max-width: fit-content;
   }
   .result {
     width: 90%;
@@ -311,8 +382,8 @@ button:hover {
     background: white;
   }
   .result-text {
-    background: #f8f9fa;
     padding: 15px;
+    padding-right: 0px;
     border-radius: 10px;
     max-width: 90%;
   }
@@ -323,15 +394,18 @@ button:hover {
     max-width: 90%;
     height: 87.5%;
   }
-
-  #loanGauge {
-    position: relative;
+  .loan-row {
+    gap: 10px;
   }
 }
 @media (max-width: 600px) {
+  .input-fields {
+    gap: 30px;
+    padding-bottom: 50px;
+  }
   .form-row {
     grid-template-columns: 1fr;
-    margin-bottom: 0px;
+    gap: 30px;
   }
   .loan-row {
     display: grid;
@@ -342,18 +416,16 @@ button:hover {
   body {
     padding: auto;
   }
-  #title-options,
-  #appointment-time,
-  #appointment-venue,
-  #phone-group {
-    max-width: 100%;
-  }
   .result-row {
     display: grid;
     grid-template-columns: 1fr;
     margin-bottom: 10px;
+    padding-right: 50%;
     gap: 10px;
     align-items: center;
     max-width: fit-content;
+  }
+  #button {
+    margin-top: -20px;
   }
 }
